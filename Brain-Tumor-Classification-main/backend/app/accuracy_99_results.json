@@ -1,0 +1,20 @@
+{
+  "model_name": "Gradient Boosting Brain Tumor Classifier",
+  "framework": "Scikit-Learn",
+  "target_accuracy": "99%",
+  "test_accuracy": 0.911026837806301,
+  "test_accuracy_percentage": 91.1026837806301,
+  "validation_accuracy": 0.9104908565928778,
+  "validation_accuracy_percentage": 91.04908565928778,
+  "precision": 0.910701467209034,
+  "recall": 0.911026837806301,
+  "f1_score": 0.9104997115465524,
+  "total_test_samples": 3428,
+  "correct_predictions": 3123,
+  "per_class_accuracy": {
+    "glioma": 0.8385876418663304,
+    "meningioma": 0.8582089552238806,
+    "notumor": 0.9540229885057471,
+    "pituitary": 0.9782608695652174
+  }
+}

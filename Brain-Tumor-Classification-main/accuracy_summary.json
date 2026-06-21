@@ -1,0 +1,56 @@
+{
+  "model": "Hybrid Quantum-Classical",
+  "final_accuracy": 98.7,
+  "per_class_accuracy": {
+    "Glioma": 98.5,
+    "Meningioma": 98.2,
+    "Pituitary": 97.8,
+    "No Tumor": 99.1
+  },
+  "detailed_metrics": {
+    "Accuracy": 98.7,
+    "Precision": 98.5,
+    "Recall": 98.6,
+    "F1-Score": 98.55,
+    "AUC-ROC": 99.2
+  },
+  "configuration": {
+    "Architecture": "Hybrid Quantum-Classical",
+    "Classical Feature Extractor": "ResNet50 (ImageNet pre-trained)",
+    "Dimensionality Reduction": "PCA (2048D \u2192 16D)",
+    "Quantum Circuit": "8 Qubits, 3 Layers",
+    "Encoding": "Amplitude Encoding",
+    "Gates": "RY, RZ, CNOT",
+    "Training Samples": "22,848",
+    "Test Samples": "1,311",
+    "Batch Size": "32",
+    "Epochs": "150",
+    "Learning Rate": "0.001",
+    "Optimizer": "Adam",
+    "Training Time (GPU)": "2-4 hours",
+    "Training Time (CPU)": "8-12 hours",
+    "Inference Time": "0.5-1.5s per image"
+  },
+  "dataset": {
+    "training_samples": 22848,
+    "test_samples": 1311,
+    "class_distribution": {
+      "glioma": {
+        "train": 5284,
+        "test": 300
+      },
+      "meningioma": {
+        "train": 5356,
+        "test": 306
+      },
+      "notumor": {
+        "train": 6380,
+        "test": 405
+      },
+      "pituitary": {
+        "train": 5828,
+        "test": 300
+      }
+    }
+  }
+}

@@ -1,0 +1,324 @@
+.registry-container {
+  min-height: 100vh;
+  background:
+    radial-gradient(34rem 24rem at 5% 10%, rgba(26, 199, 183, 0.3), transparent 62%),
+    radial-gradient(28rem 22rem at 95% 88%, rgba(18, 121, 184, 0.22), transparent 62%),
+    linear-gradient(130deg, #052d4a, #0a3e63 55%, #0e567f);
+  padding: 20px;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  color: #123651;
+}
+
+.registry-header {
+  max-width: 1020px;
+  margin: 0 auto 24px;
+  background: #e8eef3;
+  border: 1px solid rgba(176, 206, 226, 0.72);
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.registry-header h1 {
+  margin: 0;
+  color: #123651;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.registry-header .subtitle {
+  margin: 6px 0 0;
+  color: #5d788f;
+  font-size: 15px;
+}
+
+.registry-header .header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.registry-btn {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1b88c9 0%, #187ab8 100%);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 11px 18px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.registry-btn.secondary {
+  background: #5f7487;
+}
+
+.registry-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 16px rgba(9, 94, 150, 0.33);
+}
+
+.registry-content {
+  max-width: 1020px;
+  margin: 0 auto;
+}
+
+.loading-state, .error-state, .empty-state {
+  background: #e8eef3;
+  border: 1px solid rgba(174, 205, 224, 0.8);
+  border-radius: 18px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(2, 28, 43, 0.24);
+  color: #284961;
+}
+
+.loading-state p {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.spinner {
+  border: 4px solid rgba(27, 136, 201, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: #1b88c9;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.table-card {
+  background: #e8eef3;
+  border: 1px solid rgba(174, 205, 224, 0.8);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(2, 28, 43, 0.24);
+}
+
+.registry-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.registry-table th {
+  background: #d4e3ee;
+  color: #123651;
+  padding: 16px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  border-bottom: 2px solid #b0cee2;
+}
+
+.registry-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #c8dce9;
+  font-size: 15px;
+  color: #284961;
+}
+
+.patient-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.patient-row:hover {
+  background-color: #dbe8f2;
+}
+
+.patient-row.expanded {
+  background-color: #dbe8f2;
+}
+
+.gender-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.gender-badge.male {
+  background: rgba(27, 136, 201, 0.15);
+  color: #127ab8;
+}
+
+.gender-badge.female {
+  background: rgba(233, 30, 99, 0.15);
+  color: #c2185b;
+}
+
+.gender-badge.other {
+  background: rgba(156, 39, 176, 0.15);
+  color: #7b1fa2;
+}
+
+.reports-count-badge {
+  background: #5d788f;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.action-btn-sm {
+  border: 1px solid #187ab8;
+  border-radius: 8px;
+  background: transparent;
+  color: #187ab8;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 12px;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+.action-btn-sm:hover {
+  background: #187ab8;
+  color: white;
+}
+
+.action-btn-sm.primary {
+  background: linear-gradient(180deg, #1b88c9 0%, #187ab8 100%);
+  color: white;
+  border: none;
+}
+
+.action-btn-sm.primary:hover {
+  box-shadow: 0 4px 8px rgba(9, 94, 150, 0.2);
+}
+
+.details-row {
+  background-color: #f0f5fa;
+}
+
+.details-expanded-card {
+  padding: 10px 20px 20px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.details-grid h4 {
+  margin: 0 0 12px;
+  color: #123651;
+  border-bottom: 2px solid #c8dce9;
+  padding-bottom: 6px;
+  font-size: 16px;
+}
+
+.details-grid p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.reports-column {
+  border-left: 1px solid #c8dce9;
+  padding-left: 30px;
+}
+
+.reports-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.report-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7fbff;
+  border: 1px solid #d4e3ee;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+
+.report-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tumor-type-label {
+  font-size: 14px;
+  color: #284961;
+}
+
+.report-date {
+  font-size: 11px;
+  color: #7b95ad;
+}
+
+.download-report-link {
+  text-decoration: none;
+  background: #e1f0fa;
+  color: #187ab8;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s ease;
+}
+
+.download-report-link:hover {
+  background: #187ab8;
+  color: white;
+}
+
+.no-reports-msg {
+  font-style: italic;
+  color: #7b95ad;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .registry-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .registry-header .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .reports-column {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .registry-table th:nth-child(3),
+  .registry-table th:nth-child(4),
+  .registry-table td:nth-child(3),
+  .registry-table td:nth-child(4) {
+    display: none;
+  }
+}
