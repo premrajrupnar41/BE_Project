@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import QML from "./pages/QML";
 import PatientDetails from "./pages/PatientDetails";
 import PatientsRegistry from "./pages/PatientsRegistry";
+import AnalysisHistory from "./pages/AnalysisHistory";
+import HelpSupport from "./pages/HelpSupport";
 
 // Dynamic route wrapper to check authentication at render time
 const ProtectedRoute = ({ children }) => {
@@ -22,6 +24,8 @@ function App() {
         <Route path="/patient-details" element={<ProtectedRoute><PatientDetails /></ProtectedRoute>} />
         <Route path="/qml" element={<ProtectedRoute><QML /></ProtectedRoute>} />
         <Route path="/patients" element={<ProtectedRoute><PatientsRegistry /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><AnalysisHistory /></ProtectedRoute>} />
+        <Route path="/help" element={<ProtectedRoute><HelpSupport /></ProtectedRoute>} />
         <Route path="/cml" element={<Navigate to="/qml" replace />} />
       </Routes>
     </BrowserRouter>

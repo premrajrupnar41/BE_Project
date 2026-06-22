@@ -1,85 +1,19 @@
-.registry-container {
-  min-height: 100vh;
-  background:
-    radial-gradient(34rem 24rem at 5% 10%, rgba(26, 199, 183, 0.3), transparent 62%),
-    radial-gradient(28rem 22rem at 95% 88%, rgba(18, 121, 184, 0.22), transparent 62%),
-    linear-gradient(130deg, #052d4a, #0a3e63 55%, #0e567f);
-  padding: 20px;
-  font-family: 'Manrope', 'Segoe UI', sans-serif;
-  color: #123651;
-}
-
-.registry-header {
-  max-width: 1020px;
-  margin: 0 auto 24px;
-  background: #e8eef3;
-  border: 1px solid rgba(176, 206, 226, 0.72);
-  border-radius: 18px;
-  padding: 22px 24px;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-}
-
-.registry-header h1 {
-  margin: 0;
-  color: #123651;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.registry-header .subtitle {
-  margin: 6px 0 0;
-  color: #5d788f;
-  font-size: 15px;
-}
-
-.registry-header .header-right {
-  display: flex;
-  gap: 10px;
-}
-
-.registry-btn {
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #1b88c9 0%, #187ab8 100%);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 11px 18px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.registry-btn.secondary {
-  background: #5f7487;
-}
-
-.registry-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 9px 16px rgba(9, 94, 150, 0.33);
-}
-
 .registry-content {
-  max-width: 1020px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .loading-state, .error-state, .empty-state {
-  background: #e8eef3;
-  border: 1px solid rgba(174, 205, 224, 0.8);
-  border-radius: 18px;
+  background: var(--db-card-bg);
+  border: 1px solid var(--db-border-color);
+  border-radius: 16px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(2, 28, 43, 0.24);
-  color: #284961;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  color: var(--db-text-secondary);
 }
 
 .loading-state p {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   margin-top: 15px;
 }
@@ -90,11 +24,11 @@
 }
 
 .spinner {
-  border: 4px solid rgba(27, 136, 201, 0.1);
+  border: 4px solid rgba(27, 115, 232, 0.1);
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border-left-color: #1b88c9;
+  border-left-color: #1b73e8;
   animation: spin 1s linear infinite;
   margin: 0 auto;
 }
@@ -105,11 +39,11 @@
 }
 
 .table-card {
-  background: #e8eef3;
-  border: 1px solid rgba(174, 205, 224, 0.8);
-  border-radius: 18px;
+  background: var(--db-card-bg);
+  border: 1px solid var(--db-border-color);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(2, 28, 43, 0.24);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .registry-table {
@@ -119,71 +53,77 @@
 }
 
 .registry-table th {
-  background: #d4e3ee;
-  color: #123651;
-  padding: 16px 20px;
-  font-weight: 700;
-  font-size: 14px;
-  border-bottom: 2px solid #b0cee2;
+  background: #f8fafc;
+  color: var(--db-text-muted);
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--db-border-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .registry-table td {
   padding: 16px 20px;
-  border-bottom: 1px solid #c8dce9;
-  font-size: 15px;
-  color: #284961;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: var(--db-text-secondary);
 }
 
 .patient-row {
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .patient-row:hover {
-  background-color: #dbe8f2;
+  background-color: #f8fafc;
 }
 
 .patient-row.expanded {
-  background-color: #dbe8f2;
+  background-color: rgba(27, 115, 232, 0.03);
 }
 
 .gender-badge {
   padding: 4px 10px;
   border-radius: 8px;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
 }
 
 .gender-badge.male {
-  background: rgba(27, 136, 201, 0.15);
-  color: #127ab8;
+  background: rgba(27, 115, 232, 0.08);
+  color: #1b73e8;
+  border: 1px solid rgba(27, 115, 232, 0.15);
 }
 
 .gender-badge.female {
-  background: rgba(233, 30, 99, 0.15);
+  background: rgba(233, 30, 99, 0.08);
   color: #c2185b;
+  border: 1px solid rgba(233, 30, 99, 0.15);
 }
 
 .gender-badge.other {
-  background: rgba(156, 39, 176, 0.15);
+  background: rgba(156, 39, 176, 0.08);
   color: #7b1fa2;
+  border: 1px solid rgba(156, 39, 176, 0.15);
 }
 
 .reports-count-badge {
-  background: #5d788f;
-  color: white;
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--db-text-muted);
   padding: 4px 10px;
   border-radius: 20px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11.5px;
+  border: 1px solid var(--db-border-color);
 }
 
 .action-btn-sm {
-  border: 1px solid #187ab8;
+  border: 1px solid var(--db-border-color);
   border-radius: 8px;
-  background: transparent;
-  color: #187ab8;
+  background: #ffffff;
+  color: var(--db-text-secondary);
   font-weight: 600;
   cursor: pointer;
   padding: 6px 12px;
@@ -193,22 +133,24 @@
 }
 
 .action-btn-sm:hover {
-  background: #187ab8;
-  color: white;
+  background: #f8fafc;
+  color: var(--db-text-primary);
+  border-color: #cbd5e1;
 }
 
 .action-btn-sm.primary {
-  background: linear-gradient(180deg, #1b88c9 0%, #187ab8 100%);
+  background: linear-gradient(135deg, #1b73e8 0%, #0d53c6 100%);
   color: white;
   border: none;
 }
 
 .action-btn-sm.primary:hover {
-  box-shadow: 0 4px 8px rgba(9, 94, 150, 0.2);
+  box-shadow: 0 4px 12px rgba(27, 115, 232, 0.25);
+  transform: translateY(-1px);
 }
 
 .details-row {
-  background-color: #f0f5fa;
+  background-color: #f8fafc;
 }
 
 .details-expanded-card {
@@ -223,19 +165,25 @@
 
 .details-grid h4 {
   margin: 0 0 12px;
-  color: #123651;
-  border-bottom: 2px solid #c8dce9;
+  color: var(--db-text-primary);
+  border-bottom: 1px solid var(--db-border-color);
   padding-bottom: 6px;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .details-grid p {
-  margin: 6px 0;
-  font-size: 14px;
+  margin: 8px 0;
+  font-size: 13.5px;
+  color: var(--db-text-secondary);
+}
+
+.details-grid p strong {
+  color: var(--db-text-primary);
 }
 
 .reports-column {
-  border-left: 1px solid #c8dce9;
+  border-left: 1px solid var(--db-border-color);
   padding-left: 30px;
 }
 
@@ -249,9 +197,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f7fbff;
-  border: 1px solid #d4e3ee;
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid var(--db-border-color);
+  border-radius: 10px;
   padding: 10px 14px;
   margin-bottom: 8px;
 }
@@ -259,52 +207,67 @@
 .report-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .tumor-type-label {
-  font-size: 14px;
-  color: #284961;
+  font-size: 13px;
+  color: var(--db-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .report-date {
   font-size: 11px;
-  color: #7b95ad;
+  color: var(--db-text-muted);
 }
 
 .download-report-link {
   text-decoration: none;
-  background: #e1f0fa;
-  color: #187ab8;
+  background: rgba(27, 115, 232, 0.08);
+  color: #1b73e8;
+  border: 1px solid rgba(27, 115, 232, 0.2);
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .download-report-link:hover {
-  background: #187ab8;
+  background: #1b73e8;
   color: white;
 }
 
 .no-reports-msg {
   font-style: italic;
-  color: #7b95ad;
+  color: var(--db-text-muted);
+  font-size: 13px;
+}
+
+.registry-btn {
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1b73e8 0%, #0d53c6 100%);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 11px 18px;
   font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.registry-btn.secondary {
+  background: #64748b;
+}
+
+.registry-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(27, 115, 232, 0.25);
 }
 
 @media (max-width: 768px) {
-  .registry-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .registry-header .header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
   .details-grid {
     grid-template-columns: 1fr;
     gap: 20px;

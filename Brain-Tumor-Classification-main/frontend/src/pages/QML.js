@@ -9,6 +9,7 @@ function QML() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const username = localStorage.getItem("username");
+  const hospital = localStorage.getItem("hospital");
   const patientDetails = useMemo(() => {
     try {
       const raw = localStorage.getItem("patientDetails");
@@ -143,119 +144,206 @@ function QML() {
     "no_tumor": "No tumor detected. The brain MRI appears normal."
   };
 
+  const displayHospital = hospital || "Symbiosis";
+
+  // Normalize descriptions lookup to cover both 'no_tumor' and 'notumor'
+  const descKey = result && result.tumor_type ? result.tumor_type.toLowerCase() : "";
+
   return (
-    <div className="qml-container">
-      <div className="qml-header">
-        <div className="header-content">
-          <h1>⚛️ Quantum ML Brain Tumor Analysis</h1>
-
-          {patientDetails && (
-            <div className="patient-badge">
-              <span>Patient Name: {patientDetails.patientName}</span>
-              <span>Age: {patientDetails.age}</span>
-              <span>Gender: {patientDetails.gender}</span>
-            </div>
-          )}
-        </div>
-        <div className="header-actions">
-          <button className="back-btn" onClick={() => navigate("/patient-details")}> Patient Details</button>
-          <button className="back-btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
-          <button className="logout-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </div>
-
-      <div className="qml-content">
-        <div className="upload-section">
-          <h2>Upload MRI Image</h2>
-          <div className="upload-area">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImage}
-              id="file-input"
-              className="file-input"
-            />
-            <label htmlFor="file-input" className="upload-label">
-              <div className="upload-icon">📁</div>
-              <p>Click to upload or drag and drop</p>
-              <p className="upload-hint">PNG, JPG, GIF up to 10MB</p>
-            </label>
+    <div className="db-layout">
+      {/* Sidebar Container */}
+      <aside className="db-sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-logo">🧠</div>
+          <div className="brand-text">
+            <h2>Brain Tumor</h2>
+            <p>Classification System</p>
           </div>
         </div>
 
-        <div className="analysis-section">
-          {preview && (
-            <div className="image-preview-box">
-              <h3>Preview</h3>
-              <img src={preview} alt="MRI Preview" className="preview-image" />
-              <p className="image-name">{image?.name}</p>
-            </div>
-          )}
+        <nav className="sidebar-nav">
+          <div className="nav-group">
+            <button className="nav-item" onClick={() => navigate("/dashboard")}>
+              <span className="nav-icon">📊</span> Dashboard
+            </button>
+            <button className="nav-item active" onClick={() => navigate("/patient-details")}>
+              <span className="nav-icon">➕</span> New Analysis
+            </button>
+            <button className="nav-item" onClick={() => navigate("/history")}>
+              <span className="nav-icon">🕒</span> Analysis History
+            </button>
+            <button className="nav-item" onClick={() => navigate("/patients")}>
+              <span className="nav-icon">👥</span> Patient Registry
+            </button>
+            <button className="nav-item" onClick={() => navigate("/help")}>
+              <span className="nav-icon">❓</span> Help & Support
+            </button>
+          </div>
+        </nav>
 
-          <div className="analysis-right">
-            <div className="controls">
-              <button
-                className="predict-btn"
-                onClick={predictQuantum}
-                disabled={!image || loading}
-              >
-                {loading ? "🔄 Analyzing..." : "🚀 Analyze"}
-              </button>
-              <button
-                className="clear-btn"
-                onClick={clearAll}
-                disabled={!image && !result}
-              >
-                🗑️ Clear
-              </button>
-            </div>
+        {/* AI Model Status Widget with Hologram Brain */}
+        <div className="sidebar-model-status">
+          <div className="hologram-container">
+            <div className="hologram-glow-ring"></div>
+            <div className="hologram-platform"></div>
+            <div className="hologram-brain">🧠</div>
+          </div>
+          <p>Model: Quantum ML v2.1</p>
+          <span className="status-indicator">● Online</span>
+        </div>
+      </aside>
 
-            {loading && (
-              <div className="loading-indicator">
-                <div className="spinner"></div>
+      {/* Main Content Area */}
+      <main className="db-main">
+        {/* Top Profile Header Bar */}
+        <header className="db-topbar">
+          <div className="topbar-left-brand">
+            <span className="topbar-brand-logo">🧠</span>
+            <div className="topbar-brand-title">
+              <h1>Quantum ML Brain Tumor Analysis</h1>
+              <div className="topbar-user-info">
+                <span>🏥 {displayHospital}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="topbar-actions">
+            <button className="topbar-btn logout" onClick={handleLogout}>
+              <span className="topbar-btn-icon">🚪</span> Logout
+            </button>
+          </div>
+        </header>
+
+        {/* Header Title */}
+        <section className="db-banner">
+          <h1>Quantum ML Brain Tumor Analysis</h1>
+          <p className="patient-subtitle">Upload MRI scans and classify brain tumors using Quantum Neural Networks</p>
+        </section>
+
+        {patientDetails && (
+          <div className="analysis-patient-bar">
+            <div className="patient-bar-item">
+              <span className="bar-label">Patient:</span>
+              <span className="bar-value">{patientDetails.patientName}</span>
+            </div>
+            <div className="patient-bar-item">
+              <span className="bar-label">Age:</span>
+              <span className="bar-value">{patientDetails.age} yrs</span>
+            </div>
+            <div className="patient-bar-item">
+              <span className="bar-label">Gender:</span>
+              <span className="bar-value">{patientDetails.gender}</span>
+            </div>
+            {patientDetails.patientId && (
+              <div className="patient-bar-item">
+                <span className="bar-label">Patient ID:</span>
+                <span className="bar-value">{patientDetails.patientId}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="qml-content">
+          <div className="upload-section">
+            <h2>Upload MRI Image</h2>
+            <div className="upload-area">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImage}
+                id="file-input"
+                className="file-input"
+              />
+              <label htmlFor="file-input" className="upload-label">
+                <div className="upload-icon">📁</div>
+                <p>Click to upload or drag and drop</p>
+                <p className="upload-hint">PNG, JPG, JPEG up to 10MB</p>
+              </label>
+            </div>
+          </div>
+
+          <div className="analysis-section">
+            {preview && (
+              <div className="image-preview-box">
+                <h3>Preview</h3>
+                <img src={preview} alt="MRI Preview" className="preview-image" />
+                <p className="image-name">{image?.name}</p>
               </div>
             )}
 
-            {result && result.error && (
-              <div className="result-box error">
-                <h2>⚠️ Error</h2>
-                <p>{result.error}</p>
+            <div className="analysis-right">
+              <div className="controls">
+                <button
+                  className="predict-btn"
+                  onClick={predictQuantum}
+                  disabled={!image || loading}
+                >
+                  {loading ? "🔄 Analyzing..." : "🚀 Analyze"}
+                </button>
+                <button
+                  className="clear-btn"
+                  onClick={clearAll}
+                  disabled={!image && !result}
+                >
+                  🗑️ Clear
+                </button>
               </div>
-            )}
 
-            {result && !result.error && (
-              <div className="result-box success">
-                <div className="result-header">
-                  <h2>✅ Analysis Complete</h2>
+              {loading && (
+                <div className="loading-indicator">
+                  <div className="spinner"></div>
+                  <p>Running Quantum Neural Network prediction...</p>
                 </div>
+              )}
 
-                <div className="result-grid">
-                  <div className="result-item">
-                    <label>Tumor Type:</label>
-                    <div className="tumor-type">
-                      {result.tumor_type.toUpperCase()}
+              {result && result.error && (
+                <div className="result-box error">
+                  <h2>⚠️ Error</h2>
+                  <p>{result.error}</p>
+                </div>
+              )}
+
+              {result && !result.error && (
+                <div className="result-box success">
+                  <div className="result-header">
+                    <h2>✅ Analysis Complete</h2>
+                  </div>
+
+                  <div className="result-grid">
+                    <div className="result-item">
+                      <label>Predicted Tumor Type:</label>
+                      <div className="tumor-type">
+                        <span className={`result-badge ${result.tumor_type.toLowerCase()}`}>
+                          {result.tumor_type === "notumor" ? "No Tumor" : result.tumor_type.toUpperCase().replace("_", " ")}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="tumor-description">
-                  <h3>About {result.tumor_type.replace('_', ' ').toUpperCase()}:</h3>
-                  <p>{tumorDescriptions[result.tumor_type] || "Classification complete."}</p>
-                </div>
+                  <div className="tumor-description">
+                    <h3>About {result.tumor_type.replace('_', ' ').toUpperCase()}:</h3>
+                    <p>
+                      {tumorDescriptions[descKey] || 
+                       tumorDescriptions[descKey.replace('no_tumor', 'notumor')] || 
+                       tumorDescriptions[descKey.replace('notumor', 'no_tumor')] || 
+                       "Classification complete."}
+                    </p>
+                  </div>
 
-                <div className="result-actions">
-                  <button className="action-btn" onClick={downloadReport}>
-                    📥 Download Report
-                  </button>
-                  <button className="action-btn secondary" onClick={clearAll}>
-                    🔄 Analyze Another
-                  </button>
+                  <div className="result-actions">
+                    <button className="action-btn" onClick={downloadReport}>
+                      📥 Download Report
+                    </button>
+                    <button className="action-btn secondary" onClick={clearAll}>
+                      🔄 Analyze Another
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

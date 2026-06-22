@@ -5,6 +5,7 @@ import "./PatientDetails.css";
 function PatientDetails() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
+  const hospital = localStorage.getItem("hospital");
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -61,7 +62,6 @@ function PatientDetails() {
     }
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("hospital");
@@ -69,96 +69,163 @@ function PatientDetails() {
     navigate("/", { replace: true });
   };
 
+  const displayHospital = hospital || "Symboisis";
+
   return (
-    <div className="patient-container">
-      <div className="patient-header">
-        <div>
-          <h1>Patient Details</h1>
-          <p className="patient-subtitle">Enter details before tumor classification</p>
-          <p className="patient-user">Username: {username || "Guest"}</p>
-        </div>
-        <div className="patient-header-actions">
-          <button className="patient-btn secondary" onClick={() => navigate("/dashboard")}>← Dashboard</button>
-          <button className="patient-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </div>
-
-      <form className="patient-form-card" onSubmit={handleSubmit}>
-        <div className="patient-form-grid">
-          <label>
-            Patient Name *
-            <input
-              type="text"
-              name="patientName"
-              value={formData.patientName}
-              onChange={handleChange}
-              placeholder="Enter patient full name"
-            />
-          </label>
-
-          <label>
-            Age *
-            <input
-              type="number"
-              min="1"
-              max="120"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              placeholder="Enter age"
-            />
-          </label>
-
-          <label>
-            Gender *
-            <select name="gender" value={formData.gender} onChange={handleChange}>
-              <option value="">Select gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </label>
-
-          <label>
-            Patient ID
-            <input
-              type="text"
-              name="patientId"
-              value={formData.patientId}
-              onChange={handleChange}
-              placeholder="Hospital or OPD ID"
-            />
-          </label>
+    <div className="db-layout">
+      {/* Sidebar Container */}
+      <aside className="db-sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-logo">🧠</div>
+          <div className="brand-text">
+            <h2>Brain Tumor</h2>
+            <p>Classification System</p>
+          </div>
         </div>
 
-        <label>
-          Contact Number
-          <input
-            type="tel"
-            name="contactNumber"
-            value={formData.contactNumber}
-            onChange={handleChange}
-            placeholder="Enter contact number"
-          />
-        </label>
+        <nav className="sidebar-nav">
+          <div className="nav-group">
+            <button className="nav-item" onClick={() => navigate("/dashboard")}>
+              <span className="nav-icon">📊</span> Dashboard
+            </button>
+            <button className="nav-item active" onClick={() => navigate("/patient-details")}>
+              <span className="nav-icon">➕</span> New Analysis
+            </button>
+            <button className="nav-item" onClick={() => navigate("/history")}>
+              <span className="nav-icon">🕒</span> Analysis History
+            </button>
+            <button className="nav-item" onClick={() => navigate("/patients")}>
+              <span className="nav-icon">👥</span> Patient Registry
+            </button>
+            <button className="nav-item" onClick={() => navigate("/help")}>
+              <span className="nav-icon">❓</span> Help & Support
+            </button>
+          </div>
+        </nav>
 
-        <label className="patient-textarea-wrap">
-          Address
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Enter patient address"
-            rows={4}
-          />
-        </label>
-
-        <div className="patient-submit-row">
-          <button type="submit" className="patient-btn">
-            Save Details & Continue to Classification →
-          </button>
+        {/* AI Model Status Widget with Hologram Brain */}
+        <div className="sidebar-model-status">
+          <div className="hologram-container">
+            <div className="hologram-glow-ring"></div>
+            <div className="hologram-platform"></div>
+            <div className="hologram-brain">🧠</div>
+          </div>
+          <p>Model: Quantum ML v2.1</p>
+          <span className="status-indicator">● Online</span>
         </div>
-      </form>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="db-main">
+        {/* Top Profile Header Bar */}
+        <header className="db-topbar">
+          <div className="topbar-left-brand">
+            <span className="topbar-brand-logo">🧠</span>
+            <div className="topbar-brand-title">
+              <h1>Quantum ML Brain Tumor Analysis</h1>
+              <div className="topbar-user-info">
+                <span>🏥 {displayHospital}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="topbar-actions">
+            <button className="topbar-btn logout" onClick={handleLogout}>
+              <span className="topbar-btn-icon">🚪</span> Logout
+            </button>
+          </div>
+        </header>
+
+        {/* Header Title */}
+        <section className="db-banner">
+          <h1>Patient Registry details</h1>
+          <p className="patient-subtitle">Enter demographics before tumor classification</p>
+        </section>
+
+        {/* Form panel card */}
+        <div className="patient-form-card">
+          <form onSubmit={handleSubmit}>
+            <div className="patient-form-grid">
+              <label>
+                Patient Name *
+                <input
+                  type="text"
+                  name="patientName"
+                  value={formData.patientName}
+                  onChange={handleChange}
+                  placeholder="Enter patient full name"
+                  autoComplete="off"
+                />
+              </label>
+
+              <label>
+                Age *
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  name="age"
+                  value={formData.age}
+                  onChange={handleChange}
+                  placeholder="Enter age"
+                  autoComplete="off"
+                />
+              </label>
+
+              <label>
+                Gender *
+                <select name="gender" value={formData.gender} onChange={handleChange}>
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+
+              <label>
+                Patient ID
+                <input
+                  type="text"
+                  name="patientId"
+                  value={formData.patientId}
+                  onChange={handleChange}
+                  placeholder="Hospital or OPD ID"
+                  autoComplete="off"
+                />
+              </label>
+
+              <label className="patient-textarea-wrap">
+                Contact Number
+                <input
+                  type="tel"
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleChange}
+                  placeholder="Enter contact number"
+                  autoComplete="off"
+                />
+              </label>
+
+              <label className="patient-textarea-wrap">
+                Address
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter patient address"
+                  rows={4}
+                />
+              </label>
+            </div>
+
+            <div className="patient-submit-row">
+              <button type="submit" className="patient-btn">
+                Save Details & Continue to Classification →
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }
