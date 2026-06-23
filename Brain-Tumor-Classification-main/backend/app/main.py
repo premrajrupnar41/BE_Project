@@ -461,6 +461,15 @@ def load_models():
 # =========================
 # HEALTH CHECK
 # =========================
+@app.get("/")
+def read_root():
+    return {
+        "message": "Brain Tumor Classification Backend API is running successfully!",
+        "status": "active",
+        "docs_url": "/docs",
+        "health_check": "/health"
+    }
+
 @app.get("/health")
 def health_check():
     return {

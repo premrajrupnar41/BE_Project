@@ -6,6 +6,7 @@ function PatientsRegistry() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const hospital = localStorage.getItem("hospital");
+  const patientDetails = localStorage.getItem("patientDetails") ? JSON.parse(localStorage.getItem("patientDetails")) : null;
 
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);

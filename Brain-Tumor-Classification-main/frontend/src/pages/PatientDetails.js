@@ -6,6 +6,7 @@ function PatientDetails() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const hospital = localStorage.getItem("hospital");
+  const patientDetails = localStorage.getItem("patientDetails") ? JSON.parse(localStorage.getItem("patientDetails")) : null;
 
   const [formData, setFormData] = useState({
     patientName: "",

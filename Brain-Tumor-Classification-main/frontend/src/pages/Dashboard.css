@@ -1,15 +1,15 @@
 /* Global Hybrid Layout Variables & Setup */
 :root {
-  --db-bg-dark-navy: #051b3b;
-  --db-bg-dark-sidebar: #061d49;
+  --db-bg-dark-navy: linear-gradient(90deg, #001128 0%, #002554 50%, #003f8a 100%);
+  --db-bg-dark-sidebar: linear-gradient(180deg, #001128 0%, #000815 100%);
   --db-bg-light: #f4f6fa;
   --db-card-bg: #ffffff;
   --db-border-color: #e2e8f0;
-  
+
   --db-text-primary: #0f172a;
   --db-text-secondary: #334155;
   --db-text-muted: #64748b;
-  
+
   --color-blue-btn: #10325c;
   --color-teal-btn: #0d695b;
   --color-purple-btn: #49339e;
@@ -27,32 +27,42 @@
 /* 1. Sidebar (Dark Navy Theme) */
 .db-sidebar {
   width: 260px;
-  background: var(--db-bg-dark-sidebar);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #001533 0%, #000c24 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
-  padding: 24px 20px;
+  padding: 0; /* Padding is 0 to make logo brand flush against borders */
   flex-shrink: 0;
 }
 
 .sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.brand-logo {
-  font-size: 28px;
-  background: rgba(27, 136, 201, 0.15);
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #00a2ff;
-  border: 1px solid rgba(0, 162, 255, 0.3);
+  background: #000c24; /* Darker navy background for the logo box */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-brand .brand-text {
+  display: none !important;
+}
+
+.brand-logo {
+  font-size: 0 !important;
+  color: transparent !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z'/><path d='M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z'/><path d='M12 5v14'/><path d='M12 9h4a2 2 0 0 1 2 2v1'/><path d='M12 12h-4a2 2 0 0 0-2 2v1'/><path d='M12 15h3a2 2 0 0 1 2 2v1'/><path d='M12 9H8a2 2 0 0 0-2 2v1'/><path d='M12 12h4a2 2 0 0 1 2 2v1'/><path d='M12 15H9a2 2 0 0 0-2 2v1'/></svg>");
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
 }
 
 .brand-text h2 {
@@ -75,6 +85,7 @@
   flex-direction: column;
   gap: 14px;
   flex-grow: 1;
+  padding: 10px 20px;
 }
 
 .nav-section-title {
@@ -97,7 +108,7 @@
   align-items: center;
   gap: 12px;
   background: transparent;
-  color: #a3b8cc;
+  color: rgba(255, 255, 255, 0.85); /* Vibrant white matching mockup */
   border: none;
   padding: 11px 15px;
   border-radius: 10px;
@@ -115,7 +126,7 @@
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, #1b73e8 0%, #0d53c6 100%);
+  background: #1b73e8; /* Solid premium blue matching active states in mockup */
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(27, 115, 232, 0.3);
 }
@@ -123,85 +134,97 @@
 /* Sidebar Hologram Brain Widget */
 .sidebar-model-status {
   margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0;
+  border-top: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
+  width: 100%;
+  height: 240px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  overflow: hidden;
 }
 
 .hologram-container {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .hologram-platform {
-  position: absolute;
-  bottom: 10px;
-  width: 100px;
-  height: 25px;
-  background: radial-gradient(ellipse at center, rgba(0, 162, 255, 0.4) 0%, transparent 70%);
-  border: 1.5px solid rgba(0, 162, 255, 0.3);
-  border-radius: 50%;
-  box-shadow: 0 0 15px rgba(0, 162, 255, 0.5);
-  animation: platformPulse 3s infinite ease-in-out;
+  display: none !important;
 }
 
 .hologram-brain {
-  font-size: 50px;
-  animation: brainFloat 3s infinite ease-in-out;
+  width: 100%;
+  height: 100%;
+  font-size: 0 !important;
+  background: url('./hologram_brain.png') no-repeat bottom center;
+  background-size: contain;
   z-index: 2;
   position: absolute;
-  bottom: 22px;
+  bottom: 0;
+  left: 0;
+  animation: brainFloat 3s ease-in-out infinite; /* Hologram float animation enabled */
 }
 
 .hologram-glow-ring {
-  position: absolute;
-  bottom: 0px;
-  width: 110px;
-  height: 40px;
-  border: 1px dashed rgba(0, 162, 255, 0.2);
-  border-radius: 50%;
-  animation: ringRotate 15s infinite linear;
+  display: none !important;
 }
 
 @keyframes brainFloat {
-  0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-8px) scale(1.03); }
-  100% { transform: translateY(0px) scale(1); }
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+
+  50% {
+    transform: translateY(-8px) scale(1.03);
+  }
+
+  100% {
+    transform: translateY(0px) scale(1);
+  }
 }
 
 @keyframes platformPulse {
-  0% { box-shadow: 0 0 10px rgba(0, 162, 255, 0.4); opacity: 0.7; }
-  50% { box-shadow: 0 0 22px rgba(0, 162, 255, 0.7); opacity: 1; }
-  100% { box-shadow: 0 0 10px rgba(0, 162, 255, 0.4); opacity: 0.7; }
+  0% {
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+    opacity: 0.7;
+  }
+
+  50% {
+    box-shadow: 0 0 22px rgba(0, 162, 255, 0.7);
+    opacity: 1;
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+    opacity: 0.7;
+  }
 }
 
 @keyframes ringRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .sidebar-model-status p {
-  font-size: 11px;
-  color: #7a8f9f;
-  margin: 2px 0;
-  text-align: center;
+  display: none !important;
 }
 
 .sidebar-model-status .status-indicator {
-  font-size: 10px;
-  font-weight: 700;
-  color: #51cf66;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 6px;
+  display: none !important;
 }
 
 /* 2. Main Content Area (Light Theme) */
@@ -220,26 +243,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--db-bg-dark-navy);
+  background: linear-gradient(90deg, #021430 0%, #052654 30%, #083c7a 65%, #0b59b3 100%); /* Elegant gradient matching Image 2 */
   margin: -24px -30px 10px -30px;
-  padding: 16px 30px;
+  padding: 0 30px;
+  height: 76px; /* Aligns vertically with the brand logo box */
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 }
 
 .topbar-left-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
 }
 
 .topbar-brand-logo {
-  font-size: 32px;
-  animation: brainFloat 4s infinite ease-in-out;
+  display: none !important; /* Logo is shown only once in the sidebar top corner */
 }
 
 .topbar-brand-title {
   display: flex;
   flex-direction: column;
+  padding: 0;
 }
 
 .topbar-brand-title h1 {
@@ -253,9 +277,33 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #a3b8cc;
   margin-top: 4px;
+}
+
+.topbar-patient-info {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.patient-pill {
+  background: rgba(27, 115, 232, 0.2); /* Premium blue-ish highlight */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.patient-pill svg {
+  color: #38bdf8; /* Light blue icons matching mockup */
 }
 
 .info-divider {
@@ -273,14 +321,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
   color: #ffffff;
-  padding: 10px 18px;
-  font-size: 13.5px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 38px;
+  box-sizing: border-box;
 }
 
 .topbar-btn:hover {
@@ -306,6 +356,8 @@
 
 .topbar-btn-icon {
   font-size: 14px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Greeting Banner */

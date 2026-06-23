@@ -7,6 +7,7 @@ function AnalysisHistory() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const hospital = localStorage.getItem("hospital");
+  const patientDetails = localStorage.getItem("patientDetails") ? JSON.parse(localStorage.getItem("patientDetails")) : null;
 
   const [analyses, setAnalyses] = useState([]);
   const [loading, setLoading] = useState(true);

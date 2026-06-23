@@ -6,6 +6,7 @@ import "./Dashboard.css"; // Reuse sidebar layout styles
 function HelpSupport() {
   const navigate = useNavigate();
   const hospital = localStorage.getItem("hospital");
+  const patientDetails = localStorage.getItem("patientDetails") ? JSON.parse(localStorage.getItem("patientDetails")) : null;
 
   const handleLogout = () => {
     localStorage.removeItem("username");

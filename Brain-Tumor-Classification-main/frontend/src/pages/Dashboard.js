@@ -6,6 +6,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const hospital = localStorage.getItem("hospital");
+  const patientDetails = localStorage.getItem("patientDetails") ? JSON.parse(localStorage.getItem("patientDetails")) : null;
 
   const [stats, setStats] = useState({
     total_patients: 0,
@@ -174,7 +175,7 @@ function Dashboard() {
               <p>View previous analysis results</p>
             </div>
 
-            <div className="action-card" onClick={() => navigate("/history")}>
+            <div className="action-card" onClick={() => navigate("/patients")}>
               <div className="action-card-header">
                 <span className="action-icon">📄</span>
                 <span className="arrow-icon">➔</span>
