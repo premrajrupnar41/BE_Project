@@ -1060,17 +1060,22 @@ async def generate_report(request: ReportRequest, db: Session = Depends(get_db))
                 with open(filepath, "wb") as f:
                     f.write(pdf_buffer.getvalue())
                 
-                db_report = Report(
-                    patient_id=request.patient_db_id,
-                    hospital_id=user.id,
-                    patient_name=request.username,
-                    tumor_type=request.tumor_type,
-                    pdf_path=f"/static/reports/{filename}",
-                    created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                )
-                db.add(db_report)
-                db.commit()
-                print(f"✓ Saved report to database and path: {filepath}")
+                # Verify if patient exists in the database to prevent foreign key errors
+                patient_exists = db.query(Patient).filter(Patient.id == request.patient_db_id).first()
+                if patient_exists:
+                    db_report = Report(
+                        patient_id=request.patient_db_id,
+                        hospital_id=user.id,
+                        patient_name=request.username,
+                        tumor_type=request.tumor_type,
+                        pdf_path=f"/static/reports/{filename}",
+                        created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    )
+                    db.add(db_report)
+                    db.commit()
+                    print(f"✓ Saved report to database and path: {filepath}")
+                else:
+                    print(f"⚠ Patient ID {request.patient_db_id} not found in database (likely deleted directly). Skipping database report logging, but report file is created at: {filepath}")
         
         return StreamingResponse(
             iter([pdf_buffer.getvalue()]),
