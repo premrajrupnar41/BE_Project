@@ -414,8 +414,26 @@ def preprocess_image_sklearn(image_bytes):
         raise HTTPException(status_code=400, detail=f"Invalid image file: {str(e)}")
 
 # =========================
-# LOAD MODELS
+# LOAD MODELS & DB MIGRATION
 # =========================
+def migrate_report_paths():
+    """Update existing database records to use dynamic report download links instead of static file paths"""
+    try:
+        db = SessionLocal()
+        reports = db.query(Report).all()
+        updated_count = 0
+        for r in reports:
+            if r.pdf_path.startswith("/static/reports/"):
+                r.pdf_path = f"/reports/download/{r.id}"
+                updated_count += 1
+        if updated_count > 0:
+            db.commit()
+            print(f"✓ Migrated {updated_count} report records to use dynamic download paths")
+    except Exception as e:
+        print(f"Warning: report path migration failed: {e}")
+    finally:
+        db.close()
+
 @app.on_event("startup")
 def load_models():
     global sklearn_model, pca_model, scaler_model, class_indices, idx_to_class
@@ -457,6 +475,9 @@ def load_models():
         sklearn_model = None
 
     print("✅ Model loading complete - CNN disabled, using QML (Quantum Machine Learning) model")
+    
+    # Run the report database path migration on startup
+    migrate_report_paths()
 
 # =========================
 # HEALTH CHECK
@@ -888,116 +909,277 @@ def generate_pdf_report(
     contact_number: str = "",
     address: str = "",
 ):
-    """Generate a medical report PDF with diet and exercise recommendations"""
+    """Generate a medical report PDF with diet and exercise recommendations styled in a premium medical theme"""
     try:
-        # Create PDF
         pdf_buffer = io.BytesIO()
+        # 0.4 inch margins to fit all information on a single page beautifully
         doc = SimpleDocTemplate(pdf_buffer, pagesize=letter,
-                               rightMargin=0.5*inch, leftMargin=0.5*inch,
-                               topMargin=0.5*inch, bottomMargin=0.5*inch)
+                               rightMargin=0.4*inch, leftMargin=0.4*inch,
+                               topMargin=0.4*inch, bottomMargin=0.4*inch)
         
-        # Styles
         styles = getSampleStyleSheet()
+        
+        # Custom colors matching the requested UI theme
+        PRIMARY_BLUE = colors.HexColor('#1b75e8')      # Vibrant Blue
+        DARK_BLUE = colors.HexColor('#0b2f75')         # Deep/Dark Blue
+        BG_LIGHT_BLUE = colors.HexColor('#f4f8fe')     # Light blue card background
+        BORDER_BLUE = colors.HexColor('#dbe5f7')       # Subtle card border
+        TEXT_COLOR = colors.HexColor('#1f2937')        # Charcoal gray
+        
         title_style = ParagraphStyle(
-            'CustomTitle',
+            'DocTitle',
             parent=styles['Heading1'],
-            fontSize=24,
-            textColor=colors.HexColor('#000000'),
-            spaceAfter=12,
-            alignment=TA_CENTER,
+            fontSize=20,
+            textColor=DARK_BLUE,
+            spaceAfter=0,
+            alignment=TA_LEFT,
             fontName='Helvetica-Bold'
         )
         
-        heading_style = ParagraphStyle(
-            'CustomHeading',
-            parent=styles['Heading2'],
-            fontSize=14,
-            textColor=colors.HexColor('#000000'),
-            spaceAfter=10,
-            spaceBefore=10,
-            fontName='Helvetica-Bold'
-        )
-        
-        normal_style = ParagraphStyle(
-            'CustomNormal',
+        section_title_white = ParagraphStyle(
+            'SectionTitleWhite',
             parent=styles['Normal'],
             fontSize=10,
-            alignment=TA_JUSTIFY,
-            spaceAfter=8
+            textColor=colors.white,
+            fontName='Helvetica-Bold',
+            alignment=TA_LEFT
         )
         
-        # Content
+        section_title_blue = ParagraphStyle(
+            'SectionTitleBlue',
+            parent=styles['Normal'],
+            fontSize=11,
+            textColor=DARK_BLUE,
+            fontName='Helvetica-Bold',
+            spaceBefore=10,
+            spaceAfter=6,
+            alignment=TA_LEFT
+        )
+        
+        label_style = ParagraphStyle(
+            'FormLabel',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=DARK_BLUE,
+            fontName='Helvetica-Bold',
+            alignment=TA_LEFT
+        )
+        
+        value_style = ParagraphStyle(
+            'FormValue',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=TEXT_COLOR,
+            fontName='Helvetica',
+            alignment=TA_LEFT
+        )
+        
+        bullet_style = ParagraphStyle(
+            'BulletText',
+            parent=styles['Normal'],
+            fontSize=9.5,
+            textColor=TEXT_COLOR,
+            fontName='Helvetica',
+            leftIndent=15,
+            firstLineIndent=-10,
+            spaceAfter=4,
+            alignment=TA_LEFT
+        )
+        
+        desc_style = ParagraphStyle(
+            'ConditionDescription',
+            parent=styles['Normal'],
+            fontSize=9.5,
+            textColor=TEXT_COLOR,
+            fontName='Helvetica',
+            alignment=TA_JUSTIFY,
+            spaceAfter=4
+        )
+
         story = []
         
-        # Header
-        story.append(Paragraph("Brain Tumor Classification Report", title_style))
+        # --- HEADER SECTION ---
+        header_title_cell = Paragraph("Brain Tumor Classification Report", title_style)
+        header_table = Table([[header_title_cell]], colWidths=[7.5*inch])
+        header_table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        story.append(header_table)
+        story.append(Spacer(1, 0.15*inch))
         
-        # Report Date and User Info
+        # --- PATIENT INFORMATION TITLE BAR ---
+        info_bar_data = [[Paragraph("👤 PATIENT INFORMATION", section_title_white)]]
+        info_bar_table = Table(info_bar_data, colWidths=[7.5*inch])
+        info_bar_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), PRIMARY_BLUE),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ]))
+        story.append(info_bar_table)
+        story.append(Spacer(1, 0.05*inch))
+        
+        # Helper to construct a value cell styled like a white input box
+        def make_input_cell(value_text):
+            cell_table = Table([[Paragraph(value_text, value_style)]], colWidths=[2.2*inch])
+            cell_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+                ('BOX', (0, 0), (-1, -1), 0.75, BORDER_BLUE),
+                ('TOPPADDING', (0, 0), (-1, -1), 3),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            return cell_table
+        
+        # Helper to construct a taller address input box
+        def make_address_cell(value_text):
+            cell_table = Table([[Paragraph(value_text, value_style)]], colWidths=[2.2*inch], rowHeights=[0.75*inch])
+            cell_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+                ('BOX', (0, 0), (-1, -1), 0.75, BORDER_BLUE),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ]))
+            return cell_table
+        
         report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        info_data = [
-            ['Report Date:', report_date],
-            ['Patient Name:', username or 'N/A'],
-            ['Age:', age or 'N/A'],
-            ['Gender:', gender or 'N/A'],
-            ['Patient ID:', patient_id or 'N/A'],
-            ['Contact Number:', contact_number or 'N/A'],
-            ['Address:', address or 'N/A'],
-            ['Report Type:', 'AI Medical Analysis']
+        
+        patient_info_data = [
+            [
+                Paragraph("Report Date:", label_style), make_input_cell(report_date),
+                Paragraph("Contact Number:", label_style), make_input_cell(contact_number or "N/A")
+            ],
+            [
+                Paragraph("Patient Name:", label_style), make_input_cell(username or "N/A"),
+                Paragraph("Address:", label_style), make_address_cell(address or "N/A")
+            ],
+            [
+                Paragraph("Age:", label_style), make_input_cell(age or "N/A"),
+                Paragraph("", label_style), ""
+            ],
+            [
+                Paragraph("Gender:", label_style), make_input_cell(gender or "N/A"),
+                Paragraph("", label_style), ""
+            ],
+            [
+                Paragraph("Patient ID:", label_style), make_input_cell(patient_id or "N/A"),
+                Paragraph("Report Type:", label_style), make_input_cell("AI Medical Analysis")
+            ]
         ]
-        info_table = Table(info_data, colWidths=[2*inch, 4*inch])
-        info_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#000000')),
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+        
+        patient_table = Table(patient_info_data, colWidths=[1.3*inch, 2.3*inch, 1.3*inch, 2.3*inch])
+        patient_table.setStyle(TableStyle([
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('SPAN', (3, 1), (3, 3)),  # Span address vertically from Row 1 to Row 3
         ]))
-        story.append(info_table)
-        story.append(Spacer(1, 0.2*inch))
         
-        # Diagnosis Section
-        story.append(Paragraph("DIAGNOSIS", heading_style))
+        card_table = Table([[patient_table]], colWidths=[7.5*inch])
+        card_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), BG_LIGHT_BLUE),
+            ('BOX', (0, 0), (-1, -1), 1, BORDER_BLUE),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ]))
+        story.append(card_table)
+        story.append(Spacer(1, 0.15*inch))
         
-        diagnosis_data = [
-            ['Tumor Type:', tumor_type.replace('_', ' ').upper()],
-            ['Status:', 'Analysis Complete']
+        # --- DIAGNOSIS SECTION TITLE BAR ---
+        diag_bar_data = [[Paragraph("⚡ DIAGNOSIS", section_title_white)]]
+        diag_bar_table = Table(diag_bar_data, colWidths=[7.5*inch])
+        diag_bar_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), PRIMARY_BLUE),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ]))
+        story.append(diag_bar_table)
+        story.append(Spacer(1, 0.05*inch))
+        
+        diagnosis_info_data = [
+            [
+                Paragraph("Tumor Type:", label_style), make_input_cell(tumor_type.upper().replace('_', ' ')),
+                Paragraph("Status:", label_style), make_input_cell("Analysis Complete")
+            ]
         ]
-        diagnosis_table = Table(diagnosis_data, colWidths=[2*inch, 4*inch])
+        diagnosis_table = Table(diagnosis_info_data, colWidths=[1.3*inch, 2.3*inch, 1.3*inch, 2.3*inch])
         diagnosis_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f2f2f2')),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#000000')),
-            ('TEXTCOLOR', (1, 0), (1, -1), colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
         ]))
-        story.append(diagnosis_table)
-        story.append(Spacer(1, 0.2*inch))
         
-        # Tumor Description
-        story.append(Paragraph("ABOUT THIS CONDITION", heading_style))
+        diag_card_table = Table([[diagnosis_table]], colWidths=[7.5*inch])
+        diag_card_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), BG_LIGHT_BLUE),
+            ('BOX', (0, 0), (-1, -1), 1, BORDER_BLUE),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 10),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ]))
+        story.append(diag_card_table)
+        story.append(Spacer(1, 0.15*inch))
+        
+        # Get recommendations database entry
         recommendations = HEALTH_RECOMMENDATIONS.get(tumor_type, HEALTH_RECOMMENDATIONS["no_tumor"])
-        story.append(Paragraph(recommendations["description"], normal_style))
+        
+        # --- ABOUT THIS CONDITION SECTION ---
+        story.append(Paragraph("ABOUT THIS CONDITION", section_title_blue))
+        desc_content = [Paragraph(recommendations["description"], desc_style)]
+        desc_table = Table([[desc_content]], colWidths=[7.5*inch])
+        desc_table.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, BORDER_BLUE),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        story.append(desc_table)
         story.append(Spacer(1, 0.15*inch))
         
-        # Diet Recommendations
-        story.append(Paragraph("DIETARY RECOMMENDATIONS", heading_style))
-        for diet_item in recommendations["diet"]:
-            story.append(Paragraph(f"• {diet_item}", normal_style))
+        # --- DIETARY RECOMMENDATIONS ---
+        story.append(Paragraph("DIETARY RECOMMENDATIONS", section_title_blue))
+        diet_flowables = [Paragraph(f"<font color='#1b75e8'>✓</font> {item}", bullet_style) for item in recommendations["diet"]]
+        diet_table = Table([[diet_flowables]], colWidths=[7.5*inch])
+        diet_table.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, BORDER_BLUE),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        story.append(diet_table)
         story.append(Spacer(1, 0.15*inch))
         
-        # Exercise Recommendations
-        story.append(Paragraph("EXERCISE & PHYSICAL ACTIVITY RECOMMENDATIONS", heading_style))
-        for exercise_item in recommendations["exercise"]:
-            story.append(Paragraph(f"• {exercise_item}", normal_style))
+        # --- EXERCISE RECOMMENDATIONS ---
+        story.append(Paragraph("EXERCISE & PHYSICAL ACTIVITY RECOMMENDATIONS", section_title_blue))
+        exercise_flowables = [Paragraph(f"<font color='#1b75e8'>✓</font> {item}", bullet_style) for item in recommendations["exercise"]]
+        exercise_table = Table([[exercise_flowables]], colWidths=[7.5*inch])
+        exercise_table.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, BORDER_BLUE),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        story.append(exercise_table)
         story.append(Spacer(1, 0.15*inch))
-        
-        # Important Notes
-        story.append(Paragraph("IMPORTANT NOTES", heading_style))
+
+        # --- IMPORTANT NOTES (DISCLAIMER CALLOUT CARD) ---
+        story.append(Paragraph("IMPORTANT NOTES", section_title_blue))
         notes = [
             "This report is generated using AI-based analysis and should not be considered as a definitive diagnosis.",
             "Please consult with a qualified medical professional (neurologist or oncologist) for proper diagnosis and treatment.",
@@ -1005,17 +1187,25 @@ def generate_pdf_report(
             "Always inform your doctor before starting any new diet plan or exercise program.",
             "If you experience any unusual symptoms, contact your healthcare provider immediately."
         ]
-        for note in notes:
-            story.append(Paragraph(f"• {note}", normal_style))
-        
+        notes_flowables = [Paragraph(f"<font color='#d93838'>•</font> {note}", bullet_style) for note in notes]
+        notes_table = Table([[notes_flowables]], colWidths=[7.5*inch])
+        notes_table.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#f5c2c2')),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fff5f5')),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        story.append(notes_table)
         story.append(Spacer(1, 0.2*inch))
         
-        # Footer
+        # --- FOOTER ---
         footer_style = ParagraphStyle(
             'Footer',
             parent=styles['Normal'],
             fontSize=8,
-            textColor=colors.black,
+            textColor=colors.HexColor('#6b7280'),
             alignment=TA_CENTER
         )
         story.append(Paragraph(
@@ -1024,8 +1214,19 @@ def generate_pdf_report(
             footer_style
         ))
         
+        # Dynamic page decoration callback (Draws top/bottom brand bars on the canvas)
+        def draw_page_decorations(canvas, doc):
+            canvas.saveState()
+            # Draw bottom bright blue bar
+            canvas.setFillColor(PRIMARY_BLUE)
+            canvas.rect(0, 0, 8.5*inch, 0.08*inch, fill=1, stroke=0)
+            # Draw top deep blue bar
+            canvas.setFillColor(DARK_BLUE)
+            canvas.rect(0, 10.92*inch, 8.5*inch, 0.08*inch, fill=1, stroke=0)
+            canvas.restoreState()
+
         # Build PDF
-        doc.build(story)
+        doc.build(story, onFirstPage=draw_page_decorations, onLaterPages=draw_page_decorations)
         pdf_buffer.seek(0)
         return pdf_buffer
     
@@ -1051,15 +1252,10 @@ async def generate_report(request: ReportRequest, db: Session = Depends(get_db))
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"Brain_Tumor_Report_{timestamp}.pdf"
         
-        # Save to file system and database if patient_db_id and hospital_username are supplied
+        # Save to database only (no files stored on disk) if patient_db_id and hospital_username are supplied
         if request.patient_db_id and request.hospital_username:
             user = db.query(User).filter(User.username == request.hospital_username).first()
             if user:
-                os.makedirs(REPORTS_DIR, exist_ok=True)
-                filepath = os.path.join(REPORTS_DIR, filename)
-                with open(filepath, "wb") as f:
-                    f.write(pdf_buffer.getvalue())
-                
                 # Verify if patient exists in the database to prevent foreign key errors
                 patient_exists = db.query(Patient).filter(Patient.id == request.patient_db_id).first()
                 if patient_exists:
@@ -1068,14 +1264,16 @@ async def generate_report(request: ReportRequest, db: Session = Depends(get_db))
                         hospital_id=user.id,
                         patient_name=request.username,
                         tumor_type=request.tumor_type,
-                        pdf_path=f"/static/reports/{filename}",
+                        pdf_path="",  # temporary empty path, will set below
                         created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     )
                     db.add(db_report)
+                    db.flush()
+                    db_report.pdf_path = f"/reports/download/{db_report.id}"
                     db.commit()
-                    print(f"✓ Saved report to database and path: {filepath}")
+                    print(f"✓ Saved report metadata to database with ID: {db_report.id} (PDF files are no longer stored on disk)")
                 else:
-                    print(f"⚠ Patient ID {request.patient_db_id} not found in database (likely deleted directly). Skipping database report logging, but report file is created at: {filepath}")
+                    print(f"⚠ Patient ID {request.patient_db_id} not found in database. Skipping database report logging.")
         
         return StreamingResponse(
             iter([pdf_buffer.getvalue()]),
@@ -1088,6 +1286,50 @@ async def generate_report(request: ReportRequest, db: Session = Depends(get_db))
         db.rollback()
         print(f"✗ Report generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to generate report: {str(e)}")
+
+
+@app.get("/reports/download/{report_id}")
+def download_report_by_id(report_id: int, db: Session = Depends(get_db)):
+    """Dynamically generate and download an existing report by its database ID without storing it on disk"""
+    try:
+        report = db.query(Report).filter(Report.id == report_id).first()
+        if not report:
+            raise HTTPException(status_code=404, detail="Report not found")
+        
+        patient = report.patient
+        if not patient:
+            raise HTTPException(status_code=404, detail="Patient details not found")
+        
+        pdf_buffer = generate_pdf_report(
+            report.tumor_type,
+            patient.name,
+            str(patient.age),
+            patient.gender,
+            patient.patient_custom_id or "",
+            patient.contact or "",
+            patient.address or "",
+        )
+        
+        # Create filename from report creation timestamp
+        formatted_date = "download"
+        if report.created_at:
+            try:
+                formatted_date = datetime.strptime(report.created_at, "%Y-%m-%d %H:%M:%S").strftime("%Y%m%d_%H%M%S")
+            except Exception:
+                formatted_date = report.created_at.replace(" ", "_").replace(":", "")
+        
+        filename = f"Brain_Tumor_Report_{formatted_date}.pdf"
+        
+        return StreamingResponse(
+            iter([pdf_buffer.getvalue()]),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"✗ Dynamic report download error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate report download: {str(e)}")
 
 
 @app.post("/predict-qml")
