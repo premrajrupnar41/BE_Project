@@ -80,7 +80,7 @@ def ensure_report_schema_updates():
 
 ensure_report_schema_updates()
 
-from typing import Optional
+from typing import Optional, Union
 
 # =========================
 # REQUEST SCHEMAS
@@ -88,10 +88,10 @@ from typing import Optional
 class ReportRequest(BaseModel):
     tumor_type: str
     username: str = "User"
-    age: str = ""
+    age: Union[str, int] = ""
     gender: str = ""
-    patient_id: str = ""
-    contact_number: str = ""
+    patient_id: Union[str, int] = ""
+    contact_number: Union[str, int] = ""
     address: str = ""
     patient_db_id: Optional[int] = None
     hospital_username: str = ""
@@ -903,13 +903,17 @@ HEALTH_RECOMMENDATIONS = {
 def generate_pdf_report(
     tumor_type: str,
     username: str,
-    age: str = "",
+    age = "",
     gender: str = "",
-    patient_id: str = "",
-    contact_number: str = "",
+    patient_id = "",
+    contact_number = "",
     address: str = "",
 ):
     """Generate a medical report PDF with diet and exercise recommendations styled in a premium medical theme"""
+    # Ensure all potentially numeric fields are converted to string to prevent ReportLab errors
+    age = str(age) if age is not None else ""
+    patient_id = str(patient_id) if patient_id is not None else ""
+    contact_number = str(contact_number) if contact_number is not None else ""
     try:
         pdf_buffer = io.BytesIO()
         # 0.4 inch margins to fit all information on a single page beautifully
